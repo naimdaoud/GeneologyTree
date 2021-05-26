@@ -98,6 +98,11 @@ int main()
 	int child1[] = { 2,4,6,8,0,10,0,12,0,13,0,14,0,0,0 };
 	int child2[] = { 3,5,7,9,0,11,0,0,0,0,0,15,0,0,0 };
 
+	int parent1[] = { 1,2,4,12,8,12,13 };
+	int parent2[] = { 2,12,6,7,5,9,6 };
+
+
+
 	t = insertChild(t, parent, child1, child2, N);
 	displayInorder(t);
 }
