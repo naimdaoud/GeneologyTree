@@ -89,6 +89,117 @@ void displayInorder(treeNode* T) {
 	displayInorder(T->right);
 }
 
+int GetLevel(treeNode* T, int x, int level) { // Returns level of element x if it is present in tree,otherwise returns -1.
+	if (T == NULL) {
+		return -1;
+	}
+	// If key is present in T, or in left subtree or right subtree, return true.
+	if (T->element == x) {
+		return level;
+	}
+	int l = GetLevel(T->left, x, level + 1);
+	return (l != -1) ? l : GetLevel(T->right, x, level + 1);
+}
+
+treeNode* GetDistanceH(treeNode* T, int x, int y, int& d1, int& d2, int& dist, int lvl) {
+	if (T == NULL) 
+		return NULL;
+	// If either x or y matches with root's element, report the presence by returning root (Note that if a key is ancestor of other, then the ancestor key becomes LCA (lowest common ancestor).
+	if (T->element == x){
+		d1 = lvl;
+		return T;
+	}
+	if (T->element == y){
+		d2 = lvl;
+		return T;
+	}
+	// Look for x and y in left and right subtrees
+	treeNode* left_lca = GetDistanceH(T->left, x, y, d1, d2, dist, lvl + 1);
+	treeNode* right_lca = GetDistanceH(T->right, x, y, d1, d2, dist, lvl + 1);
+
+	// If both of the above calls return Non-NULL, then one key is present in once subtree and other is present in other. So this node is the LCA
+	if (left_lca && right_lca){
+		dist = d1 + d2 - 2 * lvl;
+		return T;
+	}
+
+	// Otherwise check if left subtree or right subtree is LCA
+	return (left_lca != NULL) ? left_lca : right_lca;
+}
+
+int GetDistance(treeNode* T, int x, int y){
+	int d1 = -1, d2 = -1, dist;
+	treeNode* lca = GetDistanceH(T, x, y, d1, d2, dist, 1);
+
+	// If both x and y were present in Tree, return dist
+	if (d1 != -1 && d2 != -1)
+		return dist;
+
+	// If x is ancestor of y, consider x as root and find level of y in subtree rooted with x
+	if (d1 != -1){
+		dist = GetLevel(lca, y, 0);
+		return dist;
+	}
+
+	// If y is ancestor of x, consider y as root and find level of x in subtree rooted with y
+	if (d2 != -1){
+		dist = GetLevel(lca, x, 0);
+		return dist;
+	}
+	return -1;
+}
+
+treeNode* GetLCA(treeNode* T, treeNode* x, treeNode* y) { //get lowest comon ancestor.
+	if (T == nullptr) {
+		return nullptr;
+	}
+	if (T == x || T == y) {
+		return T;
+	}
+
+	// recursively check if x or y exists in the left subtree
+	treeNode* left = GetLCA(T->left, x, y);
+
+	// recursively check if x or y exists in the right subtree
+	treeNode* right = GetLCA(T->right, x, y);
+
+	// if x is found in one subtree and y is found in the other subtree, update lca to the current node
+	if (left && right) {
+		return T;
+	}
+
+	// if x and y exist in the left subtree
+	if (left) {
+		return left;
+	}
+
+	// if x and y exist in the right subtree
+	if (right) {
+		return right;
+	}
+}
+
+void relation(treeNode* T, int x, int y) {
+	string rel;
+	int dist1 = 0;
+	int dist2 = 0;
+	if (T == NULL){
+		cout << "Empty tree." << endl;
+		return;
+	}
+	if (find(find(T, x), y) == NULL && find(find(T, y), x) == NULL) { // if y is not in subtree x and if x is not in subtree y then they are cousins.
+		rel = "cousin";
+		dist1 = GetDistance(T, GetLCA(T,find(T,x), find(T,y))->element , x);
+		dist2 = GetDistance(T, GetLCA(T, find(T, x), find(T, y))->element, y);
+		cout << x << " and " << y << " are " << rel << "-" << dist1 << "-" << dist2 << "-" << GetLCA(T, find(T, x), find(T, y))->element << endl;
+	}
+	else { // if y is found in subtree x then they are cousins.
+		rel = "descendant";
+		dist1 = GetDistance(T, x, y);
+		cout << x << " and " << y << " are " << rel << "-" << dist1 << endl;
+	}
+}
+
 int main()
 {
 	treeNode* t;
@@ -101,8 +212,8 @@ int main()
 	int parent1[] = { 1,2,4,12,8,12,13 };
 	int parent2[] = { 2,12,6,7,5,9,6 };
 
-
-
 	t = insertChild(t, parent, child1, child2, N);
 	displayInorder(t);
+	cout << endl;
+	relation(t, 8, 5);
 }
