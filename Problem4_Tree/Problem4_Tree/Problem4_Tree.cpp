@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
 using namespace std;
 
@@ -202,18 +204,68 @@ void relation(treeNode* T, int x, int y) {
 
 int main()
 {
+	string line;
+	string x;
+
+	int N = 15;
+	int parent[15];
+	int child1[15];
+	int child2[15];
+
+	int person1[7];
+	int person2[7];
+
+	ifstream myReadFile;
+	myReadFile.open("Input.txt");
+	if (myReadFile){
+		myReadFile >> x;
+		for (int i = 0; i < 15; i++) {
+			myReadFile >> x;
+			parent[i] = stoi(x);
+		}
+		myReadFile >> x;
+		for (int i = 0; i < 15; i++) {
+			myReadFile >> x;
+			if (x == "-") {
+				x = "0";
+			}
+			child1[i] = stoi(x);
+		}
+		myReadFile >> x;
+		for (int i = 0; i < 15; i++) {
+			myReadFile >> x;
+			if (x == "-") {
+				x = "0";
+			}
+			child2[i] = stoi(x);
+		}
+	}
+	myReadFile.close();
+
+	myReadFile.open("Request.txt");
+	if (myReadFile) {
+		myReadFile >> x;
+		for (int i = 0; i < 7; i++) {
+			myReadFile >> x;
+			person1[i] = stoi(x);
+		}
+		myReadFile >> x;
+		for (int i = 0; i < 7; i++) {
+			myReadFile >> x;
+			person2[i] = stoi(x);
+		}
+	}
+	myReadFile.close();
+
 	treeNode* t;
 	t = initialize();
-	int N = 15;
-	int parent[] = { 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
-	int child1[] = { 2,4,6,8,0,10,0,12,0,13,0,14,0,0,0 };
-	int child2[] = { 3,5,7,9,0,11,0,0,0,0,0,15,0,0,0 };
-
-	int parent1[] = { 1,2,4,12,8,12,13 };
-	int parent2[] = { 2,12,6,7,5,9,6 };
 
 	t = insertChild(t, parent, child1, child2, N);
+	cout << "Display tree in order:" << endl;
 	displayInorder(t);
-	cout << endl;
-	relation(t, 8, 5);
+	cout << endl << endl;
+	cout << "Output:" << endl;
+	for (int i= 0; i < 7; i++) {
+		relation(t, person1[i], person2[i]);
+	}
 }
