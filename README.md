@@ -1,2 +1,2 @@
-# Info2206ProjectEx4
-Info2206 Project for 2021 - Problem2 - Queue
+Create a genealogy tree, so we can determine the relationship between persons: cousin or 
+descendant.
